@@ -1,0 +1,52 @@
+services:
+  rest-api:
+    build: ./python
+    restart: unless-stopped
+    command: [ "challenges-rest-api" ]
+    env_file:
+      - python/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      run-migrations:
+        condition: service_completed_successfully
+    healthcheck:
+      test: "curl --fail http://127.0.0.1:80 || exit 1"
+      retries: 3
+      timeout: 2s
+      start_period: 10s
+  postgres:
+      image: postgres:17
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
+      environment:
+        POSTGRES_PASSWORD: ${COMPOSE__POSTGRES__PASSWORD}
+        POSTGRES_USER: ${COMPOSE__POSTGRES__USER}
+        POSTGRES_DB: ${COMPOSE__POSTGRES__DB}
+      ports:
+        - ${COMPOSE__POSTGRES__HOST}:${COMPOSE__POSTGRES__PORT}:5432
+      healthcheck:
+        test: "pg_isready -d ${COMPOSE__POSTGRES__DB} -U ${COMPOSE__POSTGRES__USER}"
+        interval: 10s
+        timeout: 5s
+        start_interval: 1s
+        retries: 3
+        start_period: 30s
+  run-migrations:
+    build: ./python
+    restart: no
+    command: [ "alembic", "upgrade", "head" ]
+    env_file:
+      - ./python/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+  nginx:
+    build: ./nginx
+    ports:
+      - ${COMPOSE__NGINX__HOST}:${COMPOSE__NGINX__PORT}:8443
+    depends_on:
+      rest-api:
+        condition: service_started
+volumes:
+  postgres_data:

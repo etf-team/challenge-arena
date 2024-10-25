@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "challenges"
+version = "0.0.1"
+dependencies = [
+    "fastapi",
+    "python-multipart~=0.0.6",
+    "python-jose~=3.3.0",
+    "bcrypt==4.0.1",  # https://github.com/pyca/bcrypt/issues/684
+    "passlib[bcrypt]~=1.7.4",
+    "pydantic[email]~=2.0",
+    "pydantic-settings~=2.0.3",
+    "SQLAlchemy~=2.0.2",
+    "uvicorn==0.21.1",
+    "dataclass-factory~=2.16",
+    "python-dotenv~=1.0.0",
+    "sqladmin",
+    "itsdangerous~=2.1",
+    "celery~=5.3.1",
+    "redis~=5.0.1",
+    "requests~=2.31.0",
+    "aiogram>=3",
+    "transliterate~=1.10.2",
+    "psycopg",
+    "greenlet",
+    "apscheduler",
+    "pytest~=7.2.2",
+    "pytest-asyncio~=0.20.3",
+    "alembic",
+    "asyncpg",
+    "dishka",
+]
+
+
+[project.scripts]
+challenges-rest-api = "challenges_backend.main.rest_api:main"
+challenges-admin = "challenges_backend.main.rest_api:main"
