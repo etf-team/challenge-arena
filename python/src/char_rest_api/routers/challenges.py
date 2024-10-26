@@ -150,7 +150,7 @@ async def get_challenges(
 
 
 @router.get(
-    "{space_id}/challenges/{challenge_id}",
+    "/{space_id}/challenges/{challenge_id}",
 )
 @inject
 async def get_full_challenge(
@@ -175,7 +175,7 @@ async def get_full_challenge(
 
 
 @router.post(
-    "{space_id}/challenges/{challenge_id}/members"
+    "/{space_id}/challenges/{challenge_id}/members"
 )
 @inject
 async def join_challenge(
@@ -230,7 +230,7 @@ class ChallengeResultDTO(BaseDTO):
 
 
 @router.post(
-    "{space_id}/challenges/{challenge_id}/submit-result"
+    "/{space_id}/challenges/{challenge_id}/submit-result"
 )
 @inject
 async def submit_challenge_result(
@@ -283,7 +283,7 @@ class EditChallenge(BaseModel):
 
 
 @router.patch(
-    "{space_id}/challenges/{challenge_id}",
+    "/{space_id}/challenges/{challenge_id}",
 )
 @inject
 async def edit_challenge(
