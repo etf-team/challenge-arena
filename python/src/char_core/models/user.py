@@ -52,6 +52,9 @@ class User(Base):
         viewonly=True,
     )
 
+    def __str__(self):
+        return f"{self.full_name} <{self.email}>"
+
 
 class SpaceMember(Base):
     __tablename__ = "space_member"
@@ -237,7 +240,7 @@ class Challenge(Base):
 
     starts_at: Mapped[datetime]
     ends_at_const: Mapped[datetime | None]
-    ends_at_determination_fn: Mapped[SelectionFnEnum]
+    ends_at_determination_fn: Mapped[SelectionFnEnum | None]
     ends_at_determination_argument: Mapped[float | None]
 
     cached_current_progress: Mapped[int] = mapped_column(default=0)
