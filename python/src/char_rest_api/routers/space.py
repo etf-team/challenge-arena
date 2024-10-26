@@ -58,7 +58,6 @@ async def get_all_space_achievements(
         .join(SpaceMember,
               and_(SpaceMember.space_id == Space.id,
                    SpaceMember.user_id == user.id))
-        .options(selectinload(Space.members))
     )
     if space_id != "*":
         stmt = stmt.where(Space.id == space_id)
