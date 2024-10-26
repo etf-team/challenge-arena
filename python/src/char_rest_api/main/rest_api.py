@@ -27,6 +27,7 @@ def main():
 
     app = FastAPI(
         lifespan=lifespan,
+        root_path="/api",
     )
     setup_dishka(container, app)
 
@@ -37,5 +38,4 @@ def main():
         host="0.0.0.0",
         port=80,
         forwarded_allow_ips="*",  # todo: adjust [sec]
-        root_path="/api",
     )
