@@ -34,9 +34,9 @@ class CreateChallenge(BaseModel):
     is_verification_required: bool
     is_estimation_required: bool
     starts_at: datetime
-    ends_at_const: datetime
+    ends_at_const: datetime | None
     ends_at_determination_fn: SelectionFnEnum
-    ends_at_determination_argument: float
+    ends_at_determination_argument: float | None
     results_aggregation_strategy: AggregationStrategy
     prize_determinataion_fn: SelectionFnEnum
     prize_determination_argument: float

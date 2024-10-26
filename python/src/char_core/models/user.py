@@ -238,7 +238,7 @@ class Challenge(Base):
     starts_at: Mapped[datetime]
     ends_at_const: Mapped[datetime | None]
     ends_at_determination_fn: Mapped[SelectionFnEnum]
-    ends_at_determination_argument: Mapped[float]
+    ends_at_determination_argument: Mapped[float | None]
 
     cached_current_progress: Mapped[int] = mapped_column(default=0)
 
