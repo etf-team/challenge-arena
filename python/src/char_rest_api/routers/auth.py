@@ -96,7 +96,7 @@ class UserDTO(BaseDTO):
     id: int
     full_name: str
     email: str
-    achievements_asignations: list[AchievementAssignationDTO]
+    achievements_assignations: list[AchievementAssignationDTO]
 
 
 class UserFullDTO(UserDTO):

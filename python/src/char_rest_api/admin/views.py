@@ -96,7 +96,7 @@ class ChallengeAdmin(ModelView, model=Challenge):
         "ends_at_determination_argument",
         "cached_current_progress",
         "results_aggregation_strategy",
-        "prize_determinataion_fn",
+        "prize_determination_fn",
         "prize_determination_argument",
         "created_at",
         "members",

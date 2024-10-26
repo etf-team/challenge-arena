@@ -241,7 +241,7 @@ class Challenge(Base):
 
     results_aggregation_strategy: Mapped[AggregationStrategy]
 
-    prize_determinataion_fn: Mapped[SelectionFnEnum]
+    prize_delermination_fn: Mapped[SelectionFnEnum]
     prize_determination_argument: Mapped[float]
 
     created_at: Mapped[CreatedAt]
