@@ -37,4 +37,5 @@ def main():
         host="0.0.0.0",
         port=80,
         forwarded_allow_ips="*",  # todo: adjust [sec]
+        root_path="/api",
     )
