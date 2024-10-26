@@ -29,6 +29,8 @@ def main():
     app = FastAPI(
         lifespan=lifespan,
         root_path="/api",
+        title="CHAR",
+        description="The challenges arena API.",
     )
     app.add_middleware(
         CORSMiddleware,
