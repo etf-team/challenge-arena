@@ -132,6 +132,7 @@ async def register(
     session.add(user)
     await session.flush()
     await session.commit()
+    await session.refresh(user)
     return UserDTO.model_validate(user)
 
 
