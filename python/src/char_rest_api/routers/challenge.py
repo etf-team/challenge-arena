@@ -1,18 +1,25 @@
 from fastapi import APIRouter
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from char_core.models.user import Challenge
+from char_core.models.user import (
+    Challenge,
+    User,
+    ChallengeMemberRoleEnum,
+    ChallengeMember,
+)
+from char_rest_api.infrastructure import openapi_auth_dep
 from char_rest_api.routers.auth import BaseDTO
 
 
 router = APIRouter(
     prefix="/challenges",
     tags=["Challenges"],
+    dependencies=[openapi_auth_dep],
 )
 
 
@@ -33,13 +40,27 @@ class ChallengeDTO(BaseDTO):
 async def create_challenge(
         session: FromDishka[AsyncSession],
         payload: CreateChallenge,
+        user: FromDishka[User],
 ):
     challenge = Challenge(
         name=payload.name,
         prize=payload.prize,
     )
     session.add(challenge)
+    administrator = ChallengeMember(
+        challenge_id=challenge.id,
+        user_id=user.id,
+        role=ChallengeMemberRoleEnum.ADMINISTRATOR,
+    )
+    session.add(member)
     await session.flush()
+
+    assert await challenge.ensure_access(
+        session=session,
+        for_user=user,
+        for_role=ChallengeMemberRoleEnum.ADMINISTRATOR,
+    )
+
     await session.commit()
 
     return ChallengeDTO.model_validate(challenge)

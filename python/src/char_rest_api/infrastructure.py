@@ -1,6 +1,9 @@
 from select import select
 from typing import AsyncIterable, Iterable, Annotated, TypeAlias
 
+from fastapi import Depends
+from fastapi.security import OAuth2PasswordBearer
+
 from authx import AuthX, AuthXConfig, TokenPayload
 from dishka import Provider, provide, Scope, FromComponent, from_context
 from pydantic import BaseModel
@@ -18,6 +21,9 @@ from char_core.models.user import User
 
 
 AccessTokenPayload: TypeAlias = TokenPayload
+
+
+openapi_auth_dep = Depends(OAuth2PasswordBearer(tokenUrl="token"))
 
 
 class PostgresConfig(BaseModel):

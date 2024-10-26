@@ -4,14 +4,14 @@ import bcrypt
 from authx import AuthX
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
-from fastapi import APIRouter, HTTPException, Depends, Form
+from fastapi import APIRouter, HTTPException, Form
 
 from pydantic import BaseModel, ConfigDict
 from char_core.models.user import User
-from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from char_rest_api.infrastructure import openapi_auth_dep
 
 router = APIRouter()
 
@@ -90,9 +90,6 @@ async def register(
     await session.flush()
     await session.commit()
     return UserDTO.model_validate(user)
-
-
-openapi_auth_dep = Depends(OAuth2PasswordBearer(tokenUrl="token"))
 
 
 @router.get(
