@@ -1,7 +1,7 @@
 from typing import Annotated
 
 import bcrypt
-from authx import AuthX, AuthXConfig
+from authx import AuthX
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, HTTPException, Depends, Form

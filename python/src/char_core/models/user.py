@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from enum import Enum
 from typing import Annotated, TypeAlias
 
 from sqlalchemy import ForeignKey
@@ -25,17 +26,23 @@ class User(Base):
     __tablename__ = "user"
 
     id: Mapped[IntegerPk]
-    email: Mapped[str]
+    email: Mapped[str] = mapped_column(unique=True)
     password_hash: Mapped[str]
     full_name: Mapped[str]
     description: Mapped[str | None]
     created_at: Mapped[CreatedAt]
 
 
+class SpaceMemberRoleEnum(Enum):
+    ADMINISTRATOR = "ADMINISTRATOR"
+    PARTICIPANT = "PARTICIPANT"
+
+
 class SpaceMember(Base):
     __tablename__ = "space_member"
 
     id: Mapped[IntegerPk]
+    role: Mapped[SpaceMemberRoleEnum]
     space_id: Mapped[int] = mapped_column(ForeignKey("space.id"))
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     created_at: Mapped[CreatedAt]
