@@ -35,7 +35,7 @@ class CreateChallenge(BaseModel):
     is_estimation_required: bool
     starts_at: datetime
     ends_at_const: datetime | None
-    ends_at_determination_fn: SelectionFnEnum
+    ends_at_determination_fn: SelectionFnEnum | None
     ends_at_determination_argument: float | None
     results_aggregation_strategy: AggregationStrategy
     prize_determinataion_fn: SelectionFnEnum
@@ -75,8 +75,8 @@ class ChallengeDTO(BaseDTO):
 
 class ChallengeFullDTO(ChallengeDTO):
     ends_at_const: datetime | None
-    ends_at_determination_fn: SelectionFnEnum
-    ends_at_determination_argument: float
+    ends_at_determination_fn: SelectionFnEnum | None
+    ends_at_determination_argument: float | None
     results_aggregation_strategy: AggregationStrategy
     prize_determinataion_fn: SelectionFnEnum
     members: list[ChallengeMemberDTO]

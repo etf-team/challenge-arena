@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from datetime import datetime
-from typing import Annotated
+from typing import Annotated, TYPE_CHECKING
 
 import bcrypt
 from authx import AuthX
@@ -13,6 +15,10 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from char_rest_api.infrastructure import openapi_auth_dep
+
+if TYPE_CHECKING:
+    from char_rest_api.routers.challenges import AchievementDTO
+
 
 router = APIRouter()
 
@@ -88,7 +94,7 @@ class BaseDTO(BaseModel):
 class AchievementAssignationDTO(BaseDTO):
     id: int
     challenge_id: int
-    achievement_id: int
+    achievement: AchievementDTO
     created_at: datetime
 
 
