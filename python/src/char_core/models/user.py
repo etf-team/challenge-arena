@@ -41,6 +41,7 @@ class User(Base):
 
     id: Mapped[IntegerPk]
     email: Mapped[str] = mapped_column(unique=True)
+    phone_number: Mapped[int | None] = mapped_column()
     password_hash: Mapped[str]
     full_name: Mapped[str]
     description: Mapped[str | None]
@@ -67,7 +68,7 @@ class Space(Base):
 
     id: Mapped[IntegerPk]
     name: Mapped[str]
-    description: Mapped[str]
+    description: Mapped[str | None]
     invitation_token: Mapped[str] = mapped_column(
         default=lambda: str(uuid4()),
     )
@@ -120,11 +121,12 @@ class AchievementAssignation(Base):
     id: Mapped[IntegerPk]
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     challenge_id: Mapped[int] = mapped_column(ForeignKey("challenge.id"))
-    # achievement_id: Mapped[int] = mapped_column(ForeignKey("achievement.id"))
+    achievement_id: Mapped[int] = mapped_column(ForeignKey("achievement.id"))
     created_at: Mapped[CreatedAt]
 
     challenge: Mapped[Challenge] = relationship()
     user: Mapped[User] = relationship()
+    achievement: Mapped[Achievement] = relationship(lazy="selectin")
 
 
 class AccessDenied(HTTPException):
@@ -242,7 +244,7 @@ class Challenge(Base):
 
     results_aggregation_strategy: Mapped[AggregationStrategy]
 
-    prize_delermination_fn: Mapped[SelectionFnEnum]
+    prize_determination_fn: Mapped[SelectionFnEnum]
     prize_determination_argument: Mapped[float]
 
     created_at: Mapped[CreatedAt]

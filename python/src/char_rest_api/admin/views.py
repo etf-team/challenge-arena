@@ -15,6 +15,7 @@ class UserAdmin(ModelView, model=User):
     column_list = [
         "id",
         "email",
+        "phone_number",
         "full_name",
         "description",
         "created_at",
@@ -25,11 +26,13 @@ class SpaceAdmin(ModelView, model=Space):
     column_list = [
         "id",
         "name",
+        "description",
         "invitation_token",
         "created_at",
     ]
     form_create_rules = [
         "name",
+        "description",
     ]
 
 
@@ -60,12 +63,13 @@ class ChallengeReportAdmin(ModelView, model=ChallengeResult):
         "verification_value",
         "created_at",
     ]
-    form_edit_rules = [
+    form_create_rules = [
         "member",
         "submitted_value",
         "estimatino_value",
         "verification_value",
     ]
+    form_edit_rules = form_create_rules
 
 
 class ChallengeMemberAdmin(ModelView, model=ChallengeMember):
@@ -73,7 +77,6 @@ class ChallengeMemberAdmin(ModelView, model=ChallengeMember):
         "id",
         "user",
         "challenge",
-        "is_owner",
         "is_referee",
         "is_participant",
         "is_administrator",
@@ -83,38 +86,40 @@ class ChallengeMemberAdmin(ModelView, model=ChallengeMember):
 
 class ChallengeAdmin(ModelView, model=Challenge):
     column_list = [
-        "id",
-        "name",
-        "description",
-        "prize",
-        "achievement",
-        "is_verification_required",
-        "is_estimation_required",
-        "starts_at",
-        "ends_at_const",
-        "ends_at_determination_fn",
-        "ends_at_determination_argument",
-        "cached_current_progress",
-        "results_aggregation_strategy",
-        "prize_determination_fn",
-        "prize_determination_argument",
-        "created_at",
-        "members",
-        "results",
+        Challenge.id,
+        Challenge.space,
+        Challenge.name,
+        Challenge.description,
+        Challenge.prize,
+        Challenge.achievement,
+        Challenge.is_verification_required,
+        Challenge.is_estimation_required,
+        Challenge.starts_at,
+        Challenge.ends_at_const,
+        Challenge.ends_at_determination_fn,
+        Challenge.ends_at_determination_argument,
+        Challenge.cached_current_progress,
+        Challenge.results_aggregation_strategy,
+        Challenge.prize_determination_fn,
+        Challenge.prize_determination_argument,
+        Challenge.created_at,
+        Challenge.members,
+        Challenge.results,
     ]
 
     form_create_rules = [
-        "name",
-        "description",
-        "prize",
-        "achievement",
-        "is_verification_required",
-        "is_estimation_required",
-        "starts_at",
-        "ends_at_const",
-        "ends_at_determination_fn",
-        "ends_at_determination_argument",
-        "results_aggregation_strategy",
-        "prize_determinataion_fn",
-        "prize_determination_argument",
+        Challenge.space,
+        Challenge.name,
+        Challenge.description,
+        Challenge.prize,
+        Challenge.achievement,
+        Challenge.is_verification_required,
+        Challenge.is_estimation_required,
+        Challenge.starts_at,
+        Challenge.ends_at_const,
+        Challenge.ends_at_determination_fn,
+        Challenge.ends_at_determination_argument,
+        Challenge.results_aggregation_strategy,
+        Challenge.prize_determination_fn,
+        Challenge.prize_determination_argument,
     ]
