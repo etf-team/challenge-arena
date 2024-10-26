@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
@@ -113,17 +114,33 @@ async def create_challenge(
 async def get_challenges(
         session: FromDishka[AsyncSession],
         user: FromDishka[User],
-        space_id: int,
+        space_id: int | Literal["*"],
+        state: ChallengeStateEnum = None,
 ) -> list[ChallengeDTO]:
-    space: Space = await get_object_or_404(session, Space, space_id)
-    await space.ensure_access(
-        session=session,
-        user=user,
-        edit=False,
-    )
+    if space_id == "*":
+        stmt = (
+            select(Space)
+            .join(SpaceMember, and_(SpaceMember.space_id == Space.id,
+                                    SpaceMember.user_id == user.id))
+        )
+        spaces = await session.scalars(stmt)
+
+    else:
+        space: Space = await get_object_or_404(session, Space, space_id)
+        spaces = [space]
+
+    for space in spaces:
+        await space.ensure_access(
+            session=session,
+            user=user,
+            edit=False,
+        )
 
     stmt = (select(Challenge)
-            .where(Challenge.space_id == space_id))
+            .where(Challenge.space_id.in_({i.id for i in spaces})))
+    if state is not None:
+        stmt = stmt.where(Challenge.state == state)
+
     challenges = await session.scalars(stmt)
 
     return [

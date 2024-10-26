@@ -143,5 +143,5 @@ async def register(
 @inject
 async def get_protected_resource(
         user: FromDishka[User],
-):
+) -> UserDTO:
     return UserDTO.model_validate(user)
