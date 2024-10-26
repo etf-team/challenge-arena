@@ -99,6 +99,10 @@ class UserDTO(BaseDTO):
     achievements_asignations: list[AchievementAssignationDTO]
 
 
+class UserFullDTO(UserDTO):
+    pass
+
+
 class Register(BaseModel):
     email: EmailStr
     password: str
@@ -110,7 +114,7 @@ class Register(BaseModel):
 async def register(
         session: FromDishka[AsyncSession],
         payload: Register,
-) -> UserDTO:
+) -> UserFullDTO:
     stmt = (
         select(User)
         .where(User.email == payload.email)
@@ -133,7 +137,7 @@ async def register(
     await session.flush()
     await session.commit()
     await session.refresh(user)
-    return UserDTO.model_validate(user)
+    return UserFullDTO.model_validate(user)
 
 
 @router.get(
@@ -143,5 +147,5 @@ async def register(
 @inject
 async def get_protected_resource(
         user: FromDishka[User],
-) -> UserDTO:
-    return UserDTO.model_validate(user)
+) -> UserFullDTO:
+    return UserFullDTO.model_validate(user)

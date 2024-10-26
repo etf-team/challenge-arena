@@ -42,7 +42,7 @@ class SpaceDTO(BaseDTO):
 
 
 @router.get(
-    "/"
+    "",
 )
 @inject
 async def get_all_spaces(
@@ -66,7 +66,7 @@ class CreateSpace(BaseModel):
 
 
 @router.post(
-    "/"
+    "",
 )
 @inject
 async def create_space(

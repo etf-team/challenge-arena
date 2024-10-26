@@ -1,6 +1,5 @@
 from contextlib import asynccontextmanager
 
-from authx import AuthX
 from dishka import make_async_container
 from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
