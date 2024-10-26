@@ -45,7 +45,7 @@ class User(Base):
     full_name: Mapped[str]
     description: Mapped[str | None]
     created_at: Mapped[CreatedAt]
-    achievements_asignations: Mapped[list[AchievementAssignation]] = relationship(
+    achievements_assignations: Mapped[list[AchievementAssignation]] = relationship(
         primaryjoin="AchievementAssignation.user_id == User.id",
         lazy="selectin",
         viewonly=True,
@@ -120,6 +120,7 @@ class AchievementAssignation(Base):
     id: Mapped[IntegerPk]
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     challenge_id: Mapped[int] = mapped_column(ForeignKey("challenge.id"))
+    achievement_id: Mapped[int] = mapped_column(ForeignKey("achievement.id"))
     created_at: Mapped[CreatedAt]
 
     challenge: Mapped[Challenge] = relationship()
