@@ -17,13 +17,11 @@ from char_rest_api.infrastructure import openapi_auth_dep
 router = APIRouter()
 
 
-@router.post("/token")
-@inject
-async def get_token(
-        session: FromDishka[AsyncSession],
-        security: FromDishka[AuthX],
-        username: Annotated[str, Form()],
-        password: Annotated[str, Form()],
+async def generic_get_token(
+        session: AsyncSession,
+        security: AuthX,
+        username: str,
+        password: str,
 ):
     email = username
     stmt = (
@@ -45,6 +43,42 @@ async def get_token(
         return {"access_token": token}
     else:
         raise exception
+
+
+@router.post("/token")
+@inject
+async def get_token(
+        session: FromDishka[AsyncSession],
+        security: FromDishka[AuthX],
+        username: Annotated[str, Form()],
+        password: Annotated[str, Form()],
+):
+    return await generic_get_token(
+        session=session,
+        security=security,
+        username=username,
+        password=password,
+    )
+
+
+class TokenRequest(BaseModel):
+    username: str
+    password: str
+
+
+@router.post("/token-json")
+@inject
+async def get_token_json(
+        session: FromDishka[AsyncSession],
+        security: FromDishka[AuthX],
+        payload: TokenRequest,
+):
+    return await generic_get_token(
+        session=session,
+        security=security,
+        username=payload.username,
+        password=payload.password,
+    )
 
 
 class BaseDTO(BaseModel):
