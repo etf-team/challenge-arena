@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Annotated
 
 import bcrypt
@@ -6,7 +7,7 @@ from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, HTTPException, Form
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, EmailStr
 from char_core.models.user import User
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -50,14 +51,22 @@ class BaseDTO(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class AchievementAssignationDTO(BaseDTO):
+    name: str
+    space_id: int
+    challenge_id: int
+    created_at: datetime
+
+
 class UserDTO(BaseDTO):
     id: int
     full_name: str
     email: str
+    achievements_asignations: list[AchievementAssignationDTO]
 
 
 class Register(BaseModel):
-    email: str
+    email: EmailStr
     password: str
     full_name: str
 

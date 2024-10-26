@@ -1,7 +1,6 @@
-from select import select
 from typing import AsyncIterable, Iterable, Annotated, TypeAlias
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 
 from authx import AuthX, AuthXConfig, TokenPayload
@@ -172,4 +171,9 @@ class InfrastructureProvider(Provider):
             session: AsyncSession,
     ) -> User:
         user = await session.get(User, int(access_token_payload.sub))
+        if user is None:
+            raise HTTPException(
+                401,
+                detail="Current user does not exists.",
+            )
         return user

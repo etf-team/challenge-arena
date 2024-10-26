@@ -7,7 +7,7 @@ from dishka import AsyncContainer
 from fastapi import FastAPI
 
 from char_rest_api.admin.auth_backend import AdminAuthBackend
-from char_rest_api.admin.views import UserAdmin
+from char_rest_api.admin import views
 from char_rest_api.infrastructure import AdminConfig
 
 
@@ -26,6 +26,12 @@ async def setup_admin(container: AsyncContainer, app: FastAPI) -> Admin:
         )
     )
 
-    admin.add_view(UserAdmin)
+    admin.add_view(views.UserAdmin)
+    admin.add_view(views.SpaceAdmin)
+    admin.add_view(views.AchievementAdmin)
+    admin.add_view(views.AchievementAssignationAdmin)
+    admin.add_view(views.ChallengeReportAdmin)
+    admin.add_view(views.ChallengeMemberAdmin)
+    admin.add_view(views.ChallengeAdmin)
 
     return admin

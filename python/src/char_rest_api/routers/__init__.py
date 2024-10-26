@@ -2,11 +2,13 @@ from fastapi import APIRouter
 
 from . import (
     auth,
-    challenge,
+    spaces,
+    challenges,
 )
 
 
 router = APIRouter()
 
 router.include_router(auth.router)
-router.include_router(challenge.router)
+router.include_router(spaces.router)
+router.include_router(challenges.router)
