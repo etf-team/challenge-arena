@@ -87,7 +87,6 @@ class BaseDTO(BaseModel):
 
 class AchievementAssignationDTO(BaseDTO):
     id: int
-    space_id: int
     challenge_id: int
     achievement_id: int
     created_at: datetime
