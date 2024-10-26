@@ -120,7 +120,7 @@ class AchievementAssignation(Base):
     id: Mapped[IntegerPk]
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     challenge_id: Mapped[int] = mapped_column(ForeignKey("challenge.id"))
-    achievement_id: Mapped[int] = mapped_column(ForeignKey("achievement.id"))
+    # achievement_id: Mapped[int] = mapped_column(ForeignKey("achievement.id"))
     created_at: Mapped[CreatedAt]
 
     challenge: Mapped[Challenge] = relationship()
