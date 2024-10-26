@@ -6,7 +6,7 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from char_core.models.user import Base
+from char_core.models.base import Base
 from src.char_rest_api.infrastructure import InfrastructureProvider, \
     PostgresConfig
 

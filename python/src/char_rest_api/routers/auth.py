@@ -1,7 +1,4 @@
-from __future__ import annotations
-
-from datetime import datetime
-from typing import Annotated, TYPE_CHECKING
+from typing import Annotated
 
 import bcrypt
 from authx import AuthX
@@ -9,15 +6,13 @@ from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, HTTPException, Form
 
-from pydantic import BaseModel, ConfigDict, EmailStr
+from pydantic import BaseModel, EmailStr
 from char_core.models.user import User
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from char_rest_api.dtos.user import UserFullDTO
 from char_rest_api.infrastructure import openapi_auth_dep
-
-if TYPE_CHECKING:
-    from char_rest_api.routers.challenges import AchievementDTO
 
 
 router = APIRouter()
@@ -85,28 +80,6 @@ async def get_token_json(
         username=payload.username,
         password=payload.password,
     )
-
-
-class BaseDTO(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-
-class AchievementAssignationDTO(BaseDTO):
-    id: int
-    challenge_id: int
-    achievement: AchievementDTO
-    created_at: datetime
-
-
-class UserDTO(BaseDTO):
-    id: int
-    full_name: str
-    email: str
-    achievements_assignations: list[AchievementAssignationDTO]
-
-
-class UserFullDTO(UserDTO):
-    pass
 
 
 class Register(BaseModel):

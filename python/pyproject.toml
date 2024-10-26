@@ -12,7 +12,7 @@ dependencies = [
     "python-jose",
     "bcrypt",
     "passlib[bcrypt]",
-    "pydantic[email]",
+    "pydantic[email]>=2.9.2",
     "pydantic-settings",
     "SQLAlchemy~=2.0",
     "sqladmin",

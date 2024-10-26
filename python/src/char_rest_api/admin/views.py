@@ -2,13 +2,10 @@ from sqladmin import ModelView
 
 from char_core.models.user import (
     User,
-    Space,
-    Achievement,
-    AchievementAssignation,
-    ChallengeResult,
-    ChallengeMember,
-    Challenge,
 )
+from char_core.models.challenge import ChallengeResult, ChallengeMember, \
+    Challenge, Achievement, AchievementAssignation
+from char_core.models.space import Space
 
 
 class UserAdmin(ModelView, model=User):

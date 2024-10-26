@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 
@@ -10,19 +10,22 @@ from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from char_core.models.user import (
-    Challenge,
     User,
-    ChallengeMember, AggregationStrategy, SelectionFnEnum, ChallengeResult,
-    ChallengeStateEnum, SpaceMember, Space,
 )
-from char_rest_api.infrastructure import openapi_auth_dep
-from char_rest_api.routers.auth import BaseDTO, UserDTO
+from char_core.models.challenge import AggregationStrategy, SelectionFnEnum, \
+    ChallengeResult, ChallengeMember, ChallengeStateEnum, Challenge
+from char_core.models.space import SpaceMember, Space
+from char_rest_api.dtos.challenge import (
+    ChallengeDTO,
+    ChallengeFullDTO,
+    ChallengeResultDTO,
+)
 from char_rest_api.shortcuts import get_object_or_404
 
+
 router = APIRouter(
-    prefix="/spaces",
+    prefix="/spaces/{space_id}/challenges",
     tags=["Spaces"],
-    dependencies=[openapi_auth_dep],
 )
 
 
@@ -42,48 +45,8 @@ class CreateChallenge(BaseModel):
     prize_determination_argument: float
 
 
-class AchievementDTO(BaseDTO):
-    name: str
-    space_id: int
-
-
-class ChallengeMemberDTO(BaseDTO):
-    id: int
-    user: UserDTO
-    challenge_id: int
-    is_referee: bool
-    is_participant: bool
-    is_administrator: bool
-    created_at: datetime
-
-
-class ChallengeDTO(BaseDTO):
-    id: int
-    space_id: int
-    name: str
-    state: ChallengeStateEnum
-    description: str
-    prize: str | None
-    achievement_id: int | None
-    is_verification_required: bool
-    is_estimation_required: bool
-    starts_at: datetime
-    current_progress: int = Field(
-        validation_alias="cached_current_progress",
-    )
-
-
-class ChallengeFullDTO(ChallengeDTO):
-    ends_at_const: datetime | None
-    ends_at_determination_fn: SelectionFnEnum | None
-    ends_at_determination_argument: float | None
-    results_aggregation_strategy: AggregationStrategy
-    prize_determinataion_fn: SelectionFnEnum
-    members: list[ChallengeMemberDTO]
-
-
 @router.post(
-    "/{space_id}/challenges",
+    "",
 )
 @inject
 async def create_challenge(
@@ -109,7 +72,7 @@ async def create_challenge(
 
 
 @router.get(
-    "/{space_id}/challenges",
+    "",
 )
 @inject
 async def get_challenges(
@@ -151,7 +114,7 @@ async def get_challenges(
 
 
 @router.get(
-    "/{space_id}/challenges/{challenge_id}",
+    "/{challenge_id}",
 )
 @inject
 async def get_full_challenge(
@@ -176,7 +139,7 @@ async def get_full_challenge(
 
 
 @router.post(
-    "/{space_id}/challenges/{challenge_id}/members"
+    "/{challenge_id}/members"
 )
 @inject
 async def join_challenge(
@@ -218,20 +181,8 @@ class SubmitChallengeResult(BaseModel):
     submitted_value: float
 
 
-class ChallengeResultDTO(BaseDTO):
-    id: int
-    member_id: int
-    submitted_value: float = Field(description="Assigned by submitter")
-    estimation_value: float | None = Field(
-        description="May be assigned by refree",
-    )
-    verification_value: float | None = Field(
-        description="May be assigned by administrator",
-    )
-
-
 @router.post(
-    "/{space_id}/challenges/{challenge_id}/submit-result"
+    "/{challenge_id}/submit-result"
 )
 @inject
 async def submit_challenge_result(
@@ -284,7 +235,7 @@ class EditChallenge(BaseModel):
 
 
 @router.patch(
-    "/{space_id}/challenges/{challenge_id}",
+    "/{challenge_id}",
 )
 @inject
 async def edit_challenge(

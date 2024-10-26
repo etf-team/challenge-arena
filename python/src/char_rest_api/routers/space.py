@@ -1,3 +1,5 @@
+from typing import Literal
+
 from fastapi import APIRouter
 from pydantic import BaseModel
 from dishka import FromDishka
@@ -7,40 +9,18 @@ from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from char_core.models.challenge import Achievement
 from char_core.models.user import (
     User,
-    Space,
-    SpaceMember,
 )
-from char_rest_api.infrastructure import openapi_auth_dep
-from char_rest_api.routers.auth import BaseDTO
-
+from char_core.models.space import SpaceMember, Space
+from char_rest_api.dtos.space import SpaceDTO, AchievementDTO
+from char_rest_api.dtos.base import BaseDTO
 
 router = APIRouter(
     prefix="/spaces",
     tags=["Spaces"],
-    dependencies=[openapi_auth_dep],
 )
-
-
-class SpaceMemberDTO(BaseDTO):
-    id: int
-    is_administrator: bool
-    space_id: int
-    user_id: int
-
-
-class AchievementDTO(BaseDTO):
-    space_id: int
-    name: str
-
-
-class SpaceDTO(BaseDTO):
-    id: int
-    name: str
-    description: str
-    invitation_token: str
-    achievements: list[AchievementDTO]
 
 
 @router.get(
@@ -60,6 +40,32 @@ async def get_all_spaces(
     )
     results = await session.scalars(stmt)
     return list(map(SpaceDTO.model_validate, results))
+
+
+@router.get(
+    "/{space_id}/achievements",
+)
+@inject
+async def get_all_space_achievements(
+        session: FromDishka[AsyncSession],
+        user: FromDishka[User],
+        space_id: int | Literal["*"],
+) -> list[AchievementDTO]:
+    stmt = (
+        select(Achievement)
+        .join(Space,
+              Space.id == Achievement.space_id)
+        .join(SpaceMember,
+              and_(SpaceMember.space_id == Space.id,
+                   SpaceMember.user_id == user.id))
+        .options(selectinload(Space.members))
+    )
+    if space_id != "*":
+        stmt = stmt.where(Space.id == space_id)
+
+    results = await session.scalars(stmt)
+    return [AchievementDTO.model_validate(i)
+            for i in results]
 
 
 class CreateSpace(BaseModel):
