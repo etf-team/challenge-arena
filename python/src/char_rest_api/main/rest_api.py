@@ -1,13 +1,16 @@
 from contextlib import asynccontextmanager
 
+from authx import AuthX
 from dishka import make_async_container
 from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 from uvicorn import run
 
-from challenges_backend import routers
-from challenges_backend.admin import setup_admin
-from challenges_backend.infrastructure import InfrastructureProvider
+from char_rest_api import routers
+from char_rest_api.admin import setup_admin
+from char_rest_api.infrastructure import (
+    InfrastructureProvider,
+)
 
 
 def main():
@@ -17,7 +20,9 @@ def main():
     @asynccontextmanager
     async def lifespan(current_app: FastAPI):
         await setup_admin(container, current_app)
+
         yield
+
         await app.state.dishka_container.close()
 
     app = FastAPI(

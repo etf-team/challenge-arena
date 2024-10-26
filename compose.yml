@@ -1,8 +1,12 @@
+name: "char"
+
 services:
   rest-api:
     build: ./python
+    ports:
+      - ${COMPOSE__REST_API__HOST}:${COMPOSE__REST_API__PORT}:80
     restart: unless-stopped
-    command: [ "challenges-rest-api" ]
+    command: [ "char-rest-api" ]
     env_file:
       - python/.env
     depends_on:
@@ -15,6 +19,8 @@ services:
       retries: 3
       timeout: 2s
       start_period: 10s
+    volumes:
+      - ./python/src:/usr/src/app/src
   postgres:
       image: postgres:17
       volumes:
@@ -35,7 +41,7 @@ services:
   run-migrations:
     build: ./python
     restart: no
-    command: [ "alembic", "upgrade", "head" ]
+    command: [ "char-alembic", "upgrade", "head" ]
     env_file:
       - ./python/.env
     depends_on:
@@ -44,7 +50,7 @@ services:
   nginx:
     build: ./nginx
     ports:
-      - ${COMPOSE__NGINX__HOST}:${COMPOSE__NGINX__PORT}:8443
+      - ${COMPOSE__NGINX__HOST}:${COMPOSE__NGINX__PORT}:443
     depends_on:
       rest-api:
         condition: service_started

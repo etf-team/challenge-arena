@@ -1,7 +1,8 @@
-from typing import AsyncIterable, Iterable
+from select import select
+from typing import AsyncIterable, Iterable, Annotated, TypeAlias
 
 from authx import AuthX, AuthXConfig, TokenPayload
-from dishka import Provider, provide, Scope
+from dishka import Provider, provide, Scope, FromComponent, from_context
 from pydantic import BaseModel
 from pydantic_settings import SettingsConfigDict, BaseSettings
 from sqlalchemy import Engine, create_engine
@@ -13,8 +14,10 @@ from sqlalchemy.ext.asyncio import (
 from sqlalchemy.orm import Session
 from starlette.requests import Request
 
+from char_core.models.user import User
 
-RequiredAccessToken = TokenPayload
+
+AccessTokenPayload: TypeAlias = TokenPayload
 
 
 class PostgresConfig(BaseModel):
@@ -45,7 +48,7 @@ class RestAPIConfig(BaseModel):
     jwt_secret: str
 
 
-class ChallengesConfig(BaseSettings):
+class CharConfig(BaseSettings):
     postgres: PostgresConfig = None
     rest_api: RestAPIConfig = None
     admin: AdminConfig = None
@@ -53,21 +56,20 @@ class ChallengesConfig(BaseSettings):
     model_config = SettingsConfigDict(
         env_nested_delimiter="__",
         env_file=".env",
-        env_prefix="CLOYT__",
-        toml_file="cloyt.toml",
+        env_prefix="CHAR__",
         extra="ignore",
     )
 
 
 class InfrastructureProvider(Provider):
     @provide(scope=Scope.APP)
-    def get_config(self) -> ChallengesConfig:
-        return ChallengesConfig()
+    def get_config(self) -> CharConfig:
+        return CharConfig()
 
     @provide(scope=Scope.APP)
     def get_postgres_config(
             self,
-            config: ChallengesConfig,
+            config: CharConfig,
     ) -> PostgresConfig:
         if config.postgres is None:
             raise RuntimeError("Postgres configuration not found")
@@ -77,7 +79,7 @@ class InfrastructureProvider(Provider):
     @provide(scope=Scope.APP)
     def get_admin_config(
             self,
-            config: ChallengesConfig,
+            config: CharConfig,
     ) -> AdminConfig:
         if config.admin is None:
             raise RuntimeError("Admin panel configuration not found")
@@ -87,12 +89,12 @@ class InfrastructureProvider(Provider):
     @provide(scope=Scope.APP)
     def get_rest_api_config(
             self,
-            config: RestAPIConfig,
+            config: CharConfig,
     ) -> RestAPIConfig:
-        if config.daemon is None:
+        if config.rest_api is None:
             raise RuntimeError("Rest API configuration not found.")
 
-        return config.daemon
+        return config.rest_api
 
     @provide(scope=Scope.APP)
     async def get_async_engine(
@@ -108,7 +110,10 @@ class InfrastructureProvider(Provider):
             self,
             engine: AsyncEngine,
     ) -> AsyncIterable[AsyncSession]:
-        async with AsyncSession(bind=engine) as session:
+        async with AsyncSession(
+            bind=engine,
+            expire_on_commit=False,
+        ) as session:
             yield session
 
     @provide(scope=Scope.APP)
@@ -125,7 +130,10 @@ class InfrastructureProvider(Provider):
             self,
             engine: Engine
     ) -> Iterable[Session]:
-        with Session(bind=engine, expire_on_commit=False) as session:
+        with Session(
+                bind=engine,
+                expire_on_commit=False,
+        ) as session:
             yield session
 
     @provide(scope=Scope.APP)
@@ -141,10 +149,21 @@ class InfrastructureProvider(Provider):
             config=authx_config,
         )
 
+    request = from_context(provides=Request, scope=Scope.REQUEST)
+
     @provide(scope=Scope.REQUEST)
-    async def require_access_token(
+    async def get_access_token_payload(
             self,
             request: Request,
             security: AuthX,
-    ) -> RequiredAccessToken:
+    ) -> AccessTokenPayload:
         return await security.access_token_required(request)
+
+    @provide(scope=Scope.REQUEST)
+    async def get_user(
+            self,
+            access_token_payload: AccessTokenPayload,
+            session: AsyncSession,
+    ) -> User:
+        user = await session.get(User, int(access_token_payload.sub))
+        return user
