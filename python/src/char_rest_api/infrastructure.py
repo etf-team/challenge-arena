@@ -1,3 +1,4 @@
+from datetime import timedelta
 from typing import AsyncIterable, Iterable, Annotated, TypeAlias
 
 from fastapi import Depends, HTTPException
@@ -149,6 +150,7 @@ class InfrastructureProvider(Provider):
         authx_config = AuthXConfig(
             JWT_ALGORITHM="HS256",
             JWT_SECRET_KEY=rest_api_config.jwt_secret,
+            JWT_ACCESS_TOKEN_EXPIRES=timedelta(days=3),
         )
         return AuthX(
             config=authx_config,
