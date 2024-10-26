@@ -264,24 +264,23 @@ class Challenge(Base):
     )
 
     @hybrid_property
-    def state(self):
+    def state(self) -> str:
         current_datetime = datetime.now()
 
         if self.starts_at > current_datetime:
-            return ChallengeStateEnum.SCHEDULED
+            return ChallengeStateEnum.SCHEDULED.value
         elif self.cached_current_progress >= 100:
-            return ChallengeStateEnum.FINISHED
+            return ChallengeStateEnum.FINISHED.value
         else:
-            return ChallengeStateEnum.ACTIVE
+            return ChallengeStateEnum.ACTIVE.value
 
     @state.inplace.expression
     @classmethod
     def _state_expr(cls):
         return case(
-            (cls.starts_at > func.now(), ChallengeStateEnum.SCHEDULED),
-            (cls.cached_current_progress >= 100, ChallengeStateEnum.ACTIVE),
-            else_=ChallengeStateEnum.ACTIVE,
-
+            (cls.starts_at > func.now(), ChallengeStateEnum.SCHEDULED.value),
+            (cls.cached_current_progress >= 100, ChallengeStateEnum.ACTIVE.value),
+            else_=ChallengeStateEnum.ACTIVE.value,
         )
 
     @property

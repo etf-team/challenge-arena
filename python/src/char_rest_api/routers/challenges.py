@@ -139,7 +139,7 @@ async def get_challenges(
     stmt = (select(Challenge)
             .where(Challenge.space_id.in_({i.id for i in spaces})))
     if state is not None:
-        stmt = stmt.where(Challenge.state == state)
+        stmt = stmt.where(Challenge.state == state.value)
 
     challenges = await session.scalars(stmt)
 
