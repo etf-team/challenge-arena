@@ -102,7 +102,7 @@ async def join_space_by_token(
         session: FromDishka[AsyncSession],
         user: FromDishka[User],
         payload: JoinSpaceByToken,
-):
+) -> SpaceDTO:
     stmt = (
         select(Space)
         .where(Space.invitation_token

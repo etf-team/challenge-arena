@@ -89,7 +89,7 @@ async def create_challenge(
         payload: CreateChallenge,
         user: FromDishka[User],
         space_id: int,
-):
+) -> ChallengeDTO:
     challenge = Challenge(
         space_id=space_id,
         **payload.dict(),
@@ -114,7 +114,7 @@ async def get_challenges(
         session: FromDishka[AsyncSession],
         user: FromDishka[User],
         space_id: int,
-):
+) -> list[ChallengeDTO]:
     space: Space = await get_object_or_404(session, Space, space_id)
     await space.ensure_access(
         session=session,
@@ -141,7 +141,7 @@ async def get_full_challenge(
         user: FromDishka[User],
         challenge_id: int,
         space_id: int,
-):
+) -> ChallengeFullDTO:
     space: Space = await get_object_or_404(session, Space, space_id)
     await space.ensure_access(
         session=session,
@@ -166,7 +166,7 @@ async def join_challenge(
         user: FromDishka[User],
         challenge_id: int,
         space_id: int,
-):
+) -> ChallengeFullDTO:
     space: Space = await get_object_or_404(session, Space, space_id)
     await space.ensure_access(
         session=session,
@@ -193,6 +193,7 @@ async def join_challenge(
     session.add(member)
     await session.flush()
     await session.commit()
+    return ChallengeFullDTO.model_validate(challenge)
 
 
 class SubmitChallengeResult(BaseModel):
@@ -221,7 +222,7 @@ async def submit_challenge_result(
         challenge_id: int,
         space_id: int,
         payload: SubmitChallengeResult,
-):
+) -> ChallengeResultDTO:
     space: Space = await get_object_or_404(session, Space, space_id)
     await space.ensure_access(
         session=session,
@@ -274,7 +275,7 @@ async def edit_challenge(
         payload: EditChallenge,
         challenge_id: int,
         space_id: int,
-):
+) -> ChallengeFullDTO:
     space: Space = await get_object_or_404(session, Space, space_id)
     await space.ensure_access(
         session=session,
