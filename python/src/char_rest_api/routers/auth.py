@@ -56,17 +56,21 @@ class UserDTO(BaseDTO):
     email: str
 
 
+class Register(BaseModel):
+    email: str
+    password: str
+    full_name: str
+
+
 @router.post("/register")
 @inject
 async def register(
         session: FromDishka[AsyncSession],
-        email: str,
-        password: str,
-        full_name: str,
+        payload: Register,
 ) -> UserDTO:
     stmt = (
         select(User)
-        .where(User.email == email)
+        .where(User.email == payload.email)
     )
     if await session.scalar(stmt):
         raise HTTPException(
@@ -75,12 +79,12 @@ async def register(
         )
 
     salt = bcrypt.gensalt()
-    hashed = bcrypt.hashpw(password.encode(), salt)
+    hashed = bcrypt.hashpw(payload.password.encode(), salt)
 
     user = User(
-        email=email,
+        email=payload.email,
         password_hash=hashed.decode(),
-        full_name=full_name,
+        full_name=payload.full_name,
     )
     session.add(user)
     await session.flush()
