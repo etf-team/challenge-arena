@@ -4,6 +4,7 @@ from authx import AuthX
 from dishka import make_async_container
 from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from uvicorn import run
 
 from char_rest_api import routers
@@ -29,6 +30,14 @@ def main():
         lifespan=lifespan,
         root_path="/api",
     )
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],  # todo: adjust [sec]
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
     setup_dishka(container, app)
 
     app.include_router(routers.router)
@@ -38,4 +47,5 @@ def main():
         host="0.0.0.0",
         port=80,
         forwarded_allow_ips="*",  # todo: adjust [sec]
+
     )
