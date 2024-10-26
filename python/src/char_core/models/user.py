@@ -75,6 +75,7 @@ class Space(Base):
     members: Mapped[list[SpaceMember]] = relationship()
     achievements: Mapped[list[Achievement]] = relationship(
         lazy="selectin",
+        back_populates="space",
     )
 
     async def ensure_access(
@@ -107,7 +108,7 @@ class Achievement(Base):
     space_id: Mapped[int] = mapped_column(ForeignKey("space.id"))
     created_at: Mapped[CreatedAt]
 
-    space: Mapped[Space] = relationship()
+    space: Mapped[Space] = relationship(back_populates="achievements")
 
     def __str__(self):
         return self.name
