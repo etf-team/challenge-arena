@@ -58,6 +58,7 @@ class ChallengeMemberDTO(BaseDTO):
 
 
 class ChallengeDTO(BaseDTO):
+    id: int
     space_id: int
     name: str
     state: ChallengeStateEnum
