@@ -5,7 +5,7 @@ from char_core.models.user import (
 )
 from char_core.models.challenge import ChallengeResult, ChallengeMember, \
     Challenge, Achievement, AchievementAssignation
-from char_core.models.space import Space
+from char_core.models.space import Space, SpaceMember
 
 
 class UserAdmin(ModelView, model=User):
@@ -30,6 +30,15 @@ class SpaceAdmin(ModelView, model=Space):
     form_create_rules = [
         "name",
         "description",
+    ]
+
+
+class SpaceMemberAdmin(ModelView, model=SpaceMember):
+    column_list = [
+        "is_administrator",
+        "space",
+        "user",
+        "created_at",
     ]
 
 
