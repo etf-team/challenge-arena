@@ -103,6 +103,7 @@ async def get_challenges(
         )
         print(stmt)
         spaces = await session.scalars(stmt)
+        spaces = list(spaces)
         print(f"{spaces=}")
 
     else:
