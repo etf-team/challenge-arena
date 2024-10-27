@@ -125,8 +125,9 @@ async def join_space_by_token(
     member = SpaceMember(
         is_administrator=False,
         user_id=user.id,
+        space_id=space,
     )
-    space.members.append(member)
+    session.add(member)
     space.members_count = Space.members_count + 1
     await session.flush()
     await session.commit()
