@@ -9,6 +9,7 @@ class SpaceMemberDTO(BaseDTO):
 
 
 class AchievementDTO(BaseDTO):
+    id: int
     space_id: int
     name: str
 
