@@ -28,6 +28,7 @@ async def setup_admin(container: AsyncContainer, app: FastAPI) -> Admin:
 
     admin.add_view(views.UserAdmin)
     admin.add_view(views.SpaceAdmin)
+    admin.add_view(views.SpaceMemberAdmin)
     admin.add_view(views.AchievementAdmin)
     admin.add_view(views.AchievementAssignationAdmin)
     admin.add_view(views.ChallengeReportAdmin)
