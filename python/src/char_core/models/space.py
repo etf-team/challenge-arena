@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from uuid import uuid4
 
-from sqlalchemy import ForeignKey, select
+from sqlalchemy import ForeignKey, select, event, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -32,6 +32,7 @@ class Space(Base):
         default=lambda: str(uuid4()),
     )
     created_at: Mapped[CreatedAt]
+    members_count: Mapped[int] = mapped_column(default=0)
     members: Mapped[list[SpaceMember]] = relationship()
     achievements: Mapped[list[Achievement]] = relationship(
         lazy="selectin",
@@ -43,6 +44,7 @@ class Space(Base):
             session: AsyncSession,
             user: User,
             edit: bool = False,
+            create_challenge: bool = False,
     ) -> SpaceMember:
         stmt = (
             select(SpaceMember)
@@ -51,7 +53,7 @@ class Space(Base):
         member = await session.scalar(stmt)
         if member is None:
             raise AccessDenied()
-        if edit and not member.is_administrator:
+        if (edit or create_challenge) and not member.is_administrator:
             raise AccessDenied()
 
         return member

@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 
-from sqlalchemy import select, and_
+from sqlalchemy import select, and_, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -92,6 +92,12 @@ async def create_space(
         is_administrator=True,
     ))
     await session.flush()
+    stmt = (
+        update(Space)
+        .where(Space.id == space.id)
+        .values(members_count=Space.members_count + 1)
+    )
+    await session.execute(stmt)
     await session.commit()
     await session.refresh(space)
     return SpaceDTO.model_validate(space)
@@ -121,6 +127,7 @@ async def join_space_by_token(
         user_id=user.id,
     )
     space.members.append(member)
+    space.members_count = Space.members_count + 1
     await session.flush()
     await session.commit()
     await session.refresh(space)

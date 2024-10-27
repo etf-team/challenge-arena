@@ -178,22 +178,13 @@ class Challenge(Base):
 
         return list(filter(is_valid, self.results))
 
-    async def ensure_access(
+    async def ensure_member_access(
             self,
             user: User,
-            just_view: bool = False,
             administrator: bool = False,
             participant: bool = False,
             refree: bool = False,
-    ):
-        if just_view:
-            space_members = await self.space.awaitable_attrs.members
-            members = [i for i in space_members if i.user_id == user.id]
-            if not members:
-                raise AccessDenied()
-            else:
-                return None
-
+    ) -> ChallengeMember:
         members = await self.awaitable_attrs.members
         members = [i for i in members if i.user_id == user.id]
         if len(members) == 0:

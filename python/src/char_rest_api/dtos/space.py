@@ -20,3 +20,4 @@ class SpaceDTO(BaseDTO):
     description: str
     invitation_token: str
     achievements: list[AchievementDTO]
+    members_count: int

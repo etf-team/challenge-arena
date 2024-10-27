@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime
 
 from pydantic import Field
@@ -44,6 +46,7 @@ class ChallengeFullDTO(ChallengeDTO):
     results_aggregation_strategy: AggregationStrategy
     prize_determinataion_fn: SelectionFnEnum
     members: list[ChallengeMemberDTO]
+    active_results: list[ChallengeResultDTO]
 
 
 class ChallengeResultDTO(BaseDTO):

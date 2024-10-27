@@ -12,8 +12,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from char_core.models.user import (
     User,
 )
-from char_core.models.challenge import AggregationStrategy, SelectionFnEnum, \
-    ChallengeResult, ChallengeMember, ChallengeStateEnum, Challenge
+from char_core.models.challenge import (
+    AggregationStrategy,
+    SelectionFnEnum,
+    ChallengeResult,
+    ChallengeMember,
+    ChallengeStateEnum,
+    Challenge,
+)
 from char_core.models.space import SpaceMember, Space
 from char_rest_api.dtos.challenge import (
     ChallengeDTO,
@@ -41,7 +47,7 @@ class CreateChallenge(BaseModel):
     ends_at_determination_fn: SelectionFnEnum | None
     ends_at_determination_argument: float | None
     results_aggregation_strategy: AggregationStrategy
-    prize_determinataion_fn: SelectionFnEnum
+    prize_determination_fn: SelectionFnEnum
     prize_determination_argument: float
 
 
@@ -55,6 +61,12 @@ async def create_challenge(
         user: FromDishka[User],
         space_id: int,
 ) -> ChallengeDTO:
+    space: Space = await get_object_or_404(session, Space, space_id)
+    await space.ensure_access(
+        session=session,
+        user=user,
+        create_challenge=True,
+    )
     challenge = Challenge(
         space_id=space_id,
         **payload.dict(),
@@ -63,6 +75,7 @@ async def create_challenge(
     challenge.members.append(ChallengeMember(
         user_id=user.id,
         is_administrator=True,
+        is_referee=True,
         is_participant=True,
     ))
     await session.flush()
@@ -129,11 +142,11 @@ async def get_full_challenge(
         user=user,
         edit=False,
     )
-    challenge: Challenge = await get_object_or_404(session, Challenge, challenge_id)
+    challenge: Challenge = await get_object_or_404(
+        session, Challenge, challenge_id)
     assert challenge.space is space
-    await challenge.ensure_access(
+    await challenge.ensure_member_access(
         user=user,
-        just_view=True,
     )
     return ChallengeFullDTO.model_validate(challenge)
 
@@ -154,7 +167,8 @@ async def join_challenge(
         user=user,
         edit=False,
     )
-    challenge: Challenge = await get_object_or_404(session, Challenge, challenge_id)
+    challenge: Challenge = await get_object_or_404(
+        session, Challenge, challenge_id)
     assert challenge.space is space
     stmt = (select(ChallengeMember)
             .where(ChallengeMember.challenge_id == challenge.id)
@@ -198,9 +212,10 @@ async def submit_challenge_result(
         user=user,
         edit=False,
     )
-    challenge: Challenge = await get_object_or_404(session, Challenge, challenge_id)
+    challenge: Challenge = await get_object_or_404(
+        session, Challenge, challenge_id)
     assert challenge.space is space
-    member = await challenge.ensure_access(
+    member = await challenge.ensure_member_access(
         user=user,
         participant=True,
     )
@@ -226,8 +241,7 @@ class EditChallenge(BaseModel):
     ends_at_determination_fn: SelectionFnEnum = None
     ends_at_determination_argument: float = None
     results_aggregation_strategy: AggregationStrategy = None
-    prize_determinataion_fn: SelectionFnEnum = None
-
+    prize_determination_fn: SelectionFnEnum = None
 
     def update_model(self, model):
         for i in self.model_fields_set:
@@ -251,9 +265,10 @@ async def edit_challenge(
         user=user,
         edit=False,
     )
-    challenge: Challenge = await get_object_or_404(session, Challenge, challenge_id)
+    challenge: Challenge = await get_object_or_404(
+        session, Challenge, challenge_id)
     assert challenge.space is space
-    await challenge.ensure_access(
+    await challenge.ensure_member_access(
         user=user,
         administrator=True,
     )
