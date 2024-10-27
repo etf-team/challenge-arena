@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from uuid import uuid4
 
-from sqlalchemy import ForeignKey, select, event, update
+from sqlalchemy import ForeignKey, select, UniqueConstraint
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -25,6 +25,13 @@ class SpaceMember(Base):
         back_populates="members",
     )
     user: Mapped[User] = relationship(
+    )
+
+    __table_args__ = (
+        UniqueConstraint(
+            "user_id",
+            "space_id",
+        ),
     )
 
 

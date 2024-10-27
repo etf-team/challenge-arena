@@ -4,7 +4,13 @@ from datetime import datetime
 from enum import Enum
 from typing import TYPE_CHECKING, Iterable, TypeVar
 
-from sqlalchemy import ForeignKey, CheckConstraint, case, func
+from sqlalchemy import (
+    ForeignKey,
+    CheckConstraint,
+    case,
+    func,
+    UniqueConstraint,
+)
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -129,6 +135,12 @@ class ChallengeMember(Base):
     user: Mapped[User] = relationship(lazy="selectin")
     challenge: Mapped[Challenge] = relationship(
         back_populates="members",
+    )
+    __table_args__ = (
+        UniqueConstraint(
+            "user_id",
+            "challenge_id",
+        ),
     )
     # results: Mapped[list[ChallengeResult]] = relationship(
     #     secondary=lambda: Challenge.__table__,
