@@ -94,18 +94,14 @@ async def get_challenges(
         space_id: int | Literal["*"],
         state: ChallengeStateEnum = None,
 ) -> list[ChallengeDTO]:
-    print(f"space_id={space_id}")
     if space_id == "*":
         stmt = (
             select(Space)
             .join(SpaceMember, and_(SpaceMember.space_id == Space.id,
                                     SpaceMember.user_id == user.id))
         )
-        print(stmt)
         spaces = await session.scalars(stmt)
         spaces = list(spaces)
-        print(f"{spaces=}")
-
     else:
         space: Space = await get_object_or_404(session, Space, space_id)
         spaces = [space]
@@ -119,12 +115,12 @@ async def get_challenges(
 
     stmt = (select(Challenge)
             .where(Challenge.space_id.in_({i.id for i in spaces})))
-    print(stmt)
+
     if state is not None:
         stmt = stmt.where(Challenge.state == state.value)
-    print(stmt)
+
     challenges = await session.scalars(stmt)
-    print(f"{challenges=}")
+
     return [
         ChallengeDTO.model_validate(i)
         for i in challenges
