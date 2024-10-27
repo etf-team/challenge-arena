@@ -21,6 +21,12 @@ class SpaceMember(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     created_at: Mapped[CreatedAt]
 
+    space: Mapped[Space] = relationship(
+        back_populates="members",
+    )
+    user: Mapped[User] = relationship(
+    )
+
 
 class Space(Base):
     __tablename__ = "space"

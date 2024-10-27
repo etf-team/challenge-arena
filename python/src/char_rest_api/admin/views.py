@@ -77,7 +77,16 @@ class ChallengeMemberAdmin(ModelView, model=ChallengeMember):
         "is_referee",
         "is_participant",
         "is_administrator",
+        "cached_aggregated_result",
+        "is_winner",
         "created_at",
+    ]
+    create_template = [
+        "user",
+        "challenge",
+        "is_referee",
+        "is_participant",
+        "is_administrator",
     ]
 
 

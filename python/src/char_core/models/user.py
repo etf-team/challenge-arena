@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from sqlalchemy import BigInteger
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
@@ -19,7 +20,7 @@ class User(Base):
 
     id: Mapped[IntegerPk]
     email: Mapped[str] = mapped_column(unique=True)
-    phone_number: Mapped[int | None] = mapped_column()
+    phone_number: Mapped[int | None] = mapped_column(BigInteger)
     password_hash: Mapped[str]
     full_name: Mapped[str]
     description: Mapped[str | None]

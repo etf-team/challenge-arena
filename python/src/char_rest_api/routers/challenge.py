@@ -1,3 +1,4 @@
+import traceback
 from datetime import datetime
 from typing import Literal
 
@@ -227,6 +228,15 @@ async def submit_challenge_result(
     session.add(result)
     await session.flush()
     await session.commit()
+
+    try:
+        await challenge.update_lifecycle_state(
+            session=session,
+        )
+    except Exception as _:
+        print("Error while updating lifecycle state...")
+        print(traceback.format_exc())
+
     return ChallengeResultDTO.model_validate(result)
 
 

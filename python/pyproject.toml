@@ -31,3 +31,4 @@ dependencies = [
 [project.scripts]
 char-rest-api = "char_rest_api.main.rest_api:main"
 char-alembic = "char_core.main.alembic:main"
+char-daemon = "char_core.main.daemon:main"

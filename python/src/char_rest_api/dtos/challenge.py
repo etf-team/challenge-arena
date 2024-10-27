@@ -17,6 +17,8 @@ class ChallengeMemberDTO(BaseDTO):
     id: int
     user: UserDTO
     challenge_id: int
+    aggregated_result: float = Field(validation_alias="cached_aggregated_result")
+    is_winner: bool
     is_referee: bool
     is_participant: bool
     is_administrator: bool
