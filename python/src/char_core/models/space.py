@@ -49,6 +49,7 @@ class Space(Base):
         stmt = (
             select(SpaceMember)
             .where(SpaceMember.user_id == user.id)
+            .where(SpaceMember.space_id == self.id)
         )
         member = await session.scalar(stmt)
         if member is None:

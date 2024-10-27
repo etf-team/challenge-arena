@@ -44,8 +44,8 @@ class ChallengeFullDTO(ChallengeDTO):
     ends_at_determination_fn: SelectionFnEnum | None
     ends_at_determination_argument: float | None
     results_aggregation_strategy: AggregationStrategy
-    prize_determinataion_fn: SelectionFnEnum
-    prize_determinataion_argument: float
+    prize_determination_fn: SelectionFnEnum
+    prize_determination_argument: float
     members: list[ChallengeMemberDTO]
     active_results: list[ChallengeResultDTO]
 
