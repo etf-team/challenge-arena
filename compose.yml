@@ -21,6 +21,19 @@ services:
       start_period: 10s
     volumes:
       - ./python/src:/usr/src/app/src
+  daemon:
+    build: ./python
+    restart: unless-stopped
+    command: [ "char-daemon" ]
+    env_file:
+      - python/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      run-migrations:
+        condition: service_completed_successfully
+    volumes:
+      - ./python/src:/usr/src/app/src
   postgres:
       image: postgres:17
       volumes:
